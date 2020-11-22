@@ -17,8 +17,6 @@ import java.nio.file.Paths;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 public class Application extends AbstractHandler
 {
@@ -29,7 +27,7 @@ public class Application extends AbstractHandler
     private static final String RESPONSE_CODE_HEADER = "responseCode";
     private static final String DELAY_HEADER = "responseDelay";
     private static final String URL_HEADER = "urlHeader";
-    RestTemplate restTemplate = new RestTemplate();
+    //RestTemplate restTemplate = new RestTemplate();
 
     private static String loadIndex() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(Application.class.getResourceAsStream("/index.html")))) {
@@ -69,8 +67,8 @@ public class Application extends AbstractHandler
         String responseFromUrl = null;
 
         if (resourceURL != null) {
-            ResponseEntity<String> responseCall = restTemplate.getForEntity(resourceURL, String.class);
-            responseFromUrl = responseCall.getBody();
+            //ResponseEntity<String> responseCall = restTemplate.getForEntity(resourceURL, String.class);
+            //responseFromUrl = responseCall.getBody();
         }
 
         response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,"Sample Response"));
