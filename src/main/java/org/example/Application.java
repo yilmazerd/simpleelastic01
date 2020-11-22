@@ -9,10 +9,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.URI;
+
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
@@ -27,6 +31,7 @@ public class Application extends AbstractHandler
     private static final String RESPONSE_CODE_HEADER = "responseCode";
     private static final String DELAY_HEADER = "responseDelay";
     private static final String URL_HEADER = "urlHeader";
+    private static final String CONTENT_TYPE = "contentType";
     //RestTemplate restTemplate = new RestTemplate();
 
     private static String loadIndex() {
@@ -66,9 +71,25 @@ public class Application extends AbstractHandler
         String resourceURL = request.getHeader(URL_HEADER);
         String responseFromUrl = null;
 
+        //HttpClient client = HttpClient.newHttpClient();
+
+        String contentType = "text/html;charset=utf-8";
+        OkHttpClient client = new OkHttpClient();
+        ObjectMapper mapper = new ObjectMapper();
+
         if (resourceURL != null) {
-            //ResponseEntity<String> responseCall = restTemplate.getForEntity(resourceURL, String.class);
-            //responseFromUrl = responseCall.getBody();
+
+            try {
+                com.squareup.okhttp.Request httpRequest = new com.squareup.okhttp.Request.Builder()
+                        .url("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
+                        .build(); // defaults to GET
+
+                Response httpResponse = client.newCall(httpRequest).execute();
+                responseFromUrl = httpResponse.body().string();
+
+            } catch (Exception e){
+
+            }
         }
 
         response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,"Sample Response"));
