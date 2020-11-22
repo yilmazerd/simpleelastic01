@@ -10,7 +10,9 @@ import java.io.StringWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.ObjectUtils;
@@ -69,11 +71,12 @@ public class Application extends AbstractHandler
         // Handle HTTP requests here.
         // Get response code
         String resourceURL = request.getHeader(URL_HEADER);
+        String contentType = request.getHeader(CONTENT_TYPE);
         String responseFromUrl = null;
 
         //HttpClient client = HttpClient.newHttpClient();
 
-        String contentType = "text/html;charset=utf-8";
+        //String contentType = "text/html;charset=utf-8";
         OkHttpClient client = new OkHttpClient();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -81,11 +84,18 @@ public class Application extends AbstractHandler
 
             try {
                 com.squareup.okhttp.Request httpRequest = new com.squareup.okhttp.Request.Builder()
-                        .url("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
+                        .url(resourceURL)
                         .build(); // defaults to GET
 
                 Response httpResponse = client.newCall(httpRequest).execute();
                 responseFromUrl = httpResponse.body().string();
+                try {
+                    JsonNode jsonNode = mapper.readValue(httpResponse.body().byteStream(), JsonNode.class);
+                    responseFromUrl = jsonNode.toString();
+                } catch (Exception e) {
+
+                }
+
 
             } catch (Exception e){
 
