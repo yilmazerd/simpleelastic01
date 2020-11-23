@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.ObjectUtils;
@@ -34,7 +33,6 @@ public class Application extends AbstractHandler
     private static final String DELAY_HEADER = "responseDelay";
     private static final String URL_HEADER = "urlHeader";
     private static final String CONTENT_TYPE = "contentType";
-    //RestTemplate restTemplate = new RestTemplate();
 
     private static String loadIndex() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(Application.class.getResourceAsStream("/index.html")))) {
@@ -96,13 +94,13 @@ public class Application extends AbstractHandler
 
                 }
 
-
             } catch (Exception e){
 
             }
         }
 
-        response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,"Sample Response"));
+        response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,loadIndex()));
+        response.setContentType(ObjectUtils.firstNonNull(contentType,"text/html;charset=utf-8"));
     }
 
     private void handleCronTask(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -113,7 +111,6 @@ public class Application extends AbstractHandler
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         response.setContentType("text/html;charset=utf-8");
-        //response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
 
         // Get response code
@@ -124,8 +121,9 @@ public class Application extends AbstractHandler
         String responseDelay = ObjectUtils.firstNonNull(baseRequest.getHeader(DELAY_HEADER),DEFAULT_DELAY);
         try {
             Thread.sleep(Integer.valueOf(responseDelay));
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            throw new IllegalArgumentException("Response delay must be an integer:\n" + e);
         }
 
         String pathInfo = request.getPathInfo();
