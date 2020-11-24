@@ -16,9 +16,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.net.URI;
-
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -67,10 +64,14 @@ public class Application extends AbstractHandler
 
     private void handleHttpRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Handle HTTP requests here.
+        String pathInfo = request.getPathInfo();
+
         // Get response code
-        String resourceURL = request.getHeader(URL_HEADER);
-        String contentType = request.getHeader(CONTENT_TYPE);
+        String resourceURL = ObjectUtils.firstNonNull(request.getHeader(URL_HEADER),request.getParameter(URL_HEADER));
+        String contentType = ObjectUtils.firstNonNull(request.getHeader(CONTENT_TYPE),request.getParameter(CONTENT_TYPE));
         String responseFromUrl = null;
+
+        //request.getParameter("something");
 
         //HttpClient client = HttpClient.newHttpClient();
 
@@ -99,7 +100,7 @@ public class Application extends AbstractHandler
             }
         }
 
-        response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,loadIndex()));
+        response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,INDEX_HTML));
         response.setContentType(ObjectUtils.firstNonNull(contentType,"text/html;charset=utf-8"));
     }
 
@@ -114,11 +115,11 @@ public class Application extends AbstractHandler
         baseRequest.setHandled(true);
 
         // Get response code
-        String responseCode = ObjectUtils.firstNonNull(baseRequest.getHeader(RESPONSE_CODE_HEADER),DEFAULT_RESPONSE);
+        String responseCode = ObjectUtils.firstNonNull(baseRequest.getHeader(RESPONSE_CODE_HEADER),baseRequest.getParameter(RESPONSE_CODE_HEADER),DEFAULT_RESPONSE);
         response.setStatus(Integer.valueOf(responseCode));
 
         // Apply delay
-        String responseDelay = ObjectUtils.firstNonNull(baseRequest.getHeader(DELAY_HEADER),DEFAULT_DELAY);
+        String responseDelay = ObjectUtils.firstNonNull(baseRequest.getHeader(DELAY_HEADER),baseRequest.getParameter(DELAY_HEADER),DEFAULT_DELAY);
         try {
             Thread.sleep(Integer.valueOf(responseDelay));
         } catch (Exception e) {
