@@ -30,6 +30,8 @@ public class Application extends AbstractHandler
     private static final String DELAY_HEADER = "responseDelay";
     private static final String URL_HEADER = "urlHeader";
     private static final String CONTENT_TYPE = "contentType";
+    private static final String RESPONSE_CONTENT = "responseContent";
+    private static int MAX_RESPONSE_DELAY = 35000;
 
     private static String loadIndex() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(Application.class.getResourceAsStream("/index.html")))) {
@@ -71,11 +73,6 @@ public class Application extends AbstractHandler
         String contentType = ObjectUtils.firstNonNull(request.getHeader(CONTENT_TYPE),request.getParameter(CONTENT_TYPE));
         String responseFromUrl = null;
 
-        //request.getParameter("something");
-
-        //HttpClient client = HttpClient.newHttpClient();
-
-        //String contentType = "text/html;charset=utf-8";
         OkHttpClient client = new OkHttpClient();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -98,6 +95,16 @@ public class Application extends AbstractHandler
             } catch (Exception e){
 
             }
+        } else {
+
+                responseFromUrl = ObjectUtils.firstNonNull(request.getHeader(RESPONSE_CONTENT),request.getParameter(RESPONSE_CONTENT));
+                try {
+                    JsonNode jsonNode = mapper.readValue(responseFromUrl, JsonNode.class);
+                    responseFromUrl = jsonNode.toString();
+                } catch (Exception e) {
+
+                }
+
         }
 
         response.getWriter().println(ObjectUtils.firstNonNull(responseFromUrl,INDEX_HTML));
@@ -121,6 +128,10 @@ public class Application extends AbstractHandler
         // Apply delay
         String responseDelay = ObjectUtils.firstNonNull(baseRequest.getHeader(DELAY_HEADER),baseRequest.getParameter(DELAY_HEADER),DEFAULT_DELAY);
         try {
+            if (Integer.valueOf(responseDelay)>MAX_RESPONSE_DELAY) {
+                throw new IllegalArgumentException("Response delay can not be more than 35 seconds");
+            }
+
             Thread.sleep(Integer.valueOf(responseDelay));
         } catch (Exception e) {
             e.printStackTrace();

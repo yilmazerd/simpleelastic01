@@ -59,13 +59,18 @@
     </tbody>
   </table>
 
-  <code><p>curl --location --request GET 'http://localhost:5000/' \ </p>
-    <p>--header 'mock-delay: 100ms' \</p>
+  <code><p>curl --location --request GET 'http://headermockserver-env.eba-enq6b9ib.us-east-1.elasticbeanstalk.com' \ </p>
     <p>--header 'responseCode: 504' \</p>
     <p>--header 'responseDelay: 10' \</p>
     <p>--header 'urlHeader: https://tools.learningcontainer.com/sample-json.json' \</p>
     <p>--header 'contentType: application/json'</p>
   </code>
+
+  <p>Or use a query </p>
+  <code>
+    curl --location --request GET 'http://headermockserver-env.eba-enq6b9ib.us-east-1.elasticbeanstalk.com/?responseDelay=1000&responseCode=504&contentType=application/json&urlHeader=https://tools.learningcontainer.com/sample-json.json'
+  </code>
+  <p>If the client has a variable in both header and in URL param, app will use the value in header and ignore the query parameter.</p>
 </main>
 
 <footer class="footer">
