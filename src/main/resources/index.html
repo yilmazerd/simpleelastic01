@@ -20,13 +20,13 @@
 <!-- Begin page content -->
 <main role="main" class="container">
   <h1 class="mt-5">Instructions to use this app</h1>
-  <p class="lead">You can simply call this URL with any of the HTTP request methods</p>
-  <p>You can customize the response of the app by changing headers in your request. Following headers are used to customize the response</p>
+  <p class="lead">You can simply call this URL with any of the HTTP request methods, GET, POST, PATCH</p>
+  <p>You can customize the response of the app by changing headers (or query parameters) in your request. Following variables are used to customize the response</p>
   <table class="table">
     <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Header</th>
+      <th scope="col">Header/Query parameter</th>
       <th scope="col">Note</th>
       <th scope="col">Example</th>
     </tr>
@@ -56,21 +56,26 @@
       <td>Content type of the response</td>
       <td>text/html; charset=ISO-8859-1 OR application/json</td>
     </tr>
+    <tr>
+      <th scope="row">5</th>
+      <td>responseContent</td>
+      <td>Response. For Json, remove line breaks</td>
+      <td>{"name":"john","age":22,"class":"mca"}</td>
+    </tr>
     </tbody>
   </table>
 
-  <code><p>curl --location --request GET 'http://headermockserver-env.eba-enq6b9ib.us-east-1.elasticbeanstalk.com' \ </p>
-    <p>--header 'responseCode: 504' \</p>
-    <p>--header 'responseDelay: 10' \</p>
-    <p>--header 'urlHeader: https://tools.learningcontainer.com/sample-json.json' \</p>
-    <p>--header 'contentType: application/json'</p>
-  </code>
 
-  <p>Or use a query </p>
+  <p>Pass the response data in header or in query parameters</p>
   <code>
-    curl --location --request GET 'http://headermockserver-env.eba-enq6b9ib.us-east-1.elasticbeanstalk.com/?responseDelay=1000&responseCode=504&contentType=application/json&urlHeader=https://tools.learningcontainer.com/sample-json.json'
+    curl --location --request GET 'http://mock.instantfunction.com/?responseDelay=30&responseCode=200&contentType=application/json&responseContent={"name":"john","age":22,"class":"mca"}'
   </code>
-  <p>If the client has a variable in both header and in URL param, app will use the value in header and ignore the query parameter.</p>
+  <p>
+  use this app to remove line breaks
+  </p>
+  <p>
+  https://www.textfixer.com/tools/remove-line-breaks.php
+  </p>
 </main>
 
 <footer class="footer">
